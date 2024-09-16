@@ -1,4 +1,5 @@
 import { BASE_URL } from "../lib/my-utils/index";
+import { limitSkip } from "../lib/my-utils";
 
 export const refreshToken = async (token) => {
   const res = await fetch(BASE_URL + "/auth/refresh-token", {
@@ -36,13 +37,16 @@ export const login = async (data) => {
   }
 };
 
-export const getFlowers = async (token) => {
-  const res = await fetch(BASE_URL + "/Flowers", {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+export const getFlowers = async (token, { limitSkip, skip }) => {
+  const res = await fetch(
+    BASE_URL + `/Flowers?skip=${skip}&limit=${limitSkip}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   if (res.status === 200 || res.status === 201) {
     return await res.json();

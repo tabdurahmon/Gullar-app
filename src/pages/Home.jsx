@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppStore } from "../lib/zustand";
+import { limitSkip } from "../lib/my-utils";
 import { getFlowers, refreshToken } from "../request";
 import { toast } from "sonner";
 import {
@@ -17,6 +18,8 @@ import AddNewItemModal from "../components/AddNewItemModal";
 import PaginationDemo from "../components/PaginationDemo";
 
 export default function Home() {
+  const [skip, setSkip] = useState(0);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const flowers = useAppStore((state) => state.flowers);
   const setFlowers = useAppStore((state) => state.setFlowers);
@@ -26,9 +29,10 @@ export default function Home() {
 
   useEffect(() => {
     setLoading(true);
-    getFlowers(admin?.access_token)
-      .then(({ data }) => {
+    getFlowers(admin?.access_token, { skip, limitSkip })
+      .then(({ data, total }) => {
         setFlowers(data);
+        setTotal(total);
       })
       .catch(({ message }) => {
         if (message === "403") {
@@ -43,7 +47,7 @@ export default function Home() {
         }
       })
       .finally(() => setLoading(false));
-  }, [admin]);
+  }, [admin, skip]);
 
   return (
     <>
@@ -100,7 +104,7 @@ export default function Home() {
         </div>
         {flowers && (
           <div className="mb-5">
-            <PaginationDemo />
+            <PaginationDemo setSkip={setSkip} skip={skip} total={total} />
           </div>
         )}
       </div>

@@ -7,44 +7,43 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { limitSkip } from "../lib/my-utils";
 
-export default function PaginationDemo() {
+export default function PaginationDemo({ setSkip, total, skip }) {
   return (
     <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-            text="Avvalgi"
-            href="#"
-          />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#" isActive>
-            2
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">3</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-            text="Keyingi"
-            href="#"
-          />
-        </PaginationItem>
-      </PaginationContent>
+      <PaginationItem className="list-none">
+        <PaginationPrevious
+          onClick={(e) => {
+            e.preventDefault();
+            setSkip((prev) => {
+              if (prev > 0) {
+                return prev - limitSkip;
+              } else return 0;
+            });
+          }}
+          text="Oldingi"
+          href="#"
+        />
+      </PaginationItem>
+
+      <PaginationItem className="list-none">
+        <PaginationNext
+          onClick={(e) => {
+            e.preventDefault();
+            setSkip((prev) => {
+              if (prev + skip > total) {
+                return prev;
+              } else {
+                const newSkip = prev + limitSkip;
+                return newSkip;
+              }
+            });
+          }}
+          text="Keyingi"
+          href="#"
+        />
+      </PaginationItem>
     </Pagination>
   );
 }
